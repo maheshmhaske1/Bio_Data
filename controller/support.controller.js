@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const userSupport = require("../model/support.model");
 
 exports.addUserSupport = async (req, res) => {
@@ -11,7 +12,7 @@ exports.addUserSupport = async (req, res) => {
   }
 
   await new userSupport({
-    name: name,
+    subject: subject,
     email: email,
     language: language,
     message: message,
@@ -79,6 +80,34 @@ exports.getRead = async (req, res) => {
       return res.json({
         status: true,
         message: "read messages",
+        data: success,
+      });
+    })
+    .catch((error) => {
+      return res.json({
+        status: true,
+        message: "something went wrong",
+        data: error,
+      });
+    });
+};
+
+exports.editSupport = async (req, res) => {
+  const { supportId } = req.params;
+  const update_data = req.body
+
+  await userSupport
+    .findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(supportId) },
+      {
+        $set: update_data,
+      },
+      { returnOriginal: false }
+    )
+    .then((success) => {
+      return res.json({
+        status: true,
+        message: "user support details changed",
         data: success,
       });
     })
